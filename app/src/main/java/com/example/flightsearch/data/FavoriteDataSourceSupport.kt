@@ -34,8 +34,8 @@ val favorites = listOf(
     ),
     Favorite(
         id = 6,
-        departureCode = "BGY",
-        destinationCode = "ARN"
+        departureCode = "ARN",
+        destinationCode = "BGY"
     ),
     Favorite(
         id = 7,
