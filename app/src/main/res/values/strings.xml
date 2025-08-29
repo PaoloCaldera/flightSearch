@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">FlightSearch</string>
 
+    <!-- SearchBar -->
     <string name="search_departure_airport">Search departure airport</string>
+    <string name="search_icon_content_description">Search</string>
+    <string name="clear_icon_content_description">Clear</string>
 
     <!-- FlightItem -->
     <string name="favorite_icon_content_description">Favorite</string>

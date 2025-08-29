@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -22,71 +23,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
 import com.example.flightsearch.R
 import com.example.flightsearch.data.Airport
-import com.example.flightsearch.data.Favorite
 import com.example.flightsearch.data.airports
+import com.example.flightsearch.data.favorites
 import com.example.flightsearch.ui.theme.FlightSearchTheme
 
 @Composable
-fun SearchFlightsScreen(
-    searchList: List<Airport>,
+fun FlightsFragment(
+    flightsFragmentUiState: FlightsFragmentUiState,
     modifier: Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        items(searchList) { airport ->
-            AirportIem(
-                airport = airport,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        vertical = dimensionResource(R.dimen.small_padding)
-                    )
-            )
-        }
-    }
-}
-
-@Composable
-fun FavoriteFlightsScreen(
-    favorites: List<Favorite>,
-    modifier: Modifier
-) {
-    LazyColumn(modifier = modifier) {
-        items(favorites) { favorite ->
-            val departure = airports.first { it.iataCode == favorite.departureCode }
-            val destination = airports.first { it.iataCode == favorite.destinationCode }
+        items(flightsFragmentUiState.flightsUiState) { flight ->
             FlightItem(
-                departure = departure,
-                destination = destination,
-                isFavorite = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.extra_small_padding))
-            )
-        }
-    }
-}
-
-@Composable
-fun AvailableFlightsScreen(
-    selectedAirport: Airport,
-    destinationList: List<Airport>,
-    favorites: List<Favorite>,
-    modifier: Modifier
-) {
-    LazyColumn(modifier = modifier) {
-        items(destinationList) { destination ->
-            FlightItem(
-                departure = selectedAirport,
-                destination = destination,
-                isFavorite = favorites.any {
-                    it.departureCode == selectedAirport.iataCode && it.destinationCode == destination.iataCode
-                },
+                departure = flight.departure,
+                destination = flight.destination,
+                isFavorite = flight.isFavorite,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.extra_small_padding))
@@ -158,28 +113,51 @@ fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Mod
                 style = MaterialTheme.typography.labelSmall
             )
         }
-        AirportIem(airport = airport)
+        AirportItem(airport = airport)
     }
 }
 
+
+@Preview
 @Composable
-fun AirportIem(airport: Airport, modifier: Modifier = Modifier) {
-    Column(modifier = modifier) {
-        Text(
-            text = airport.name,
-            textAlign = TextAlign.Left,
-            lineHeight = dimensionResource(R.dimen.airport_name_line_height).value.sp,
-            style = MaterialTheme.typography.bodySmall
-        )
-        Text(
-            text = airport.iataCode,
-            textAlign = TextAlign.Left,
-            fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleSmall
+fun FlightsFragmentPreview_Favorites() {
+    FlightSearchTheme {
+        FlightsFragment(
+            flightsFragmentUiState = FlightsFragmentUiState(
+                flightsUiState = favorites.map { favorite ->
+                    FlightUiState(
+                        departure = airports.first { it.iataCode == favorite.departureCode },
+                        destination = airports.first { it.iataCode == favorite.destinationCode },
+                        isFavorite = true
+                    )
+                }
+            ),
+            modifier = Modifier.fillMaxSize()
         )
     }
 }
 
+@Preview
+@Composable
+fun FlightsFragmentPreview_Search() {
+    FlightSearchTheme {
+        val departure = airports.first { it.iataCode == "BGY" }
+        FlightsFragment(
+            flightsFragmentUiState = FlightsFragmentUiState(
+                flightsUiState = airports.filter { it.iataCode != "BGY" }.map { airport ->
+                    FlightUiState(
+                        departure = departure,
+                        destination = airport,
+                        isFavorite = favorites.any {
+                            it.departureCode == departure.iataCode && it.destinationCode == airport.iataCode
+                        }
+                    )
+                }
+            ),
+            modifier = Modifier.fillMaxSize()
+        )
+    }
+}
 
 @Preview
 @Composable
@@ -200,7 +178,7 @@ fun FlightItemPreview() {
 @Composable
 fun AirportItemPreview() {
     FlightSearchTheme {
-        AirportIem(
+        AirportItem(
             airport = airports[0],
             modifier = Modifier
                 .fillMaxWidth()
@@ -210,3 +188,14 @@ fun AirportItemPreview() {
         )
     }
 }
+
+
+data class FlightsFragmentUiState(
+    val flightsUiState: List<FlightUiState>
+)
+
+data class FlightUiState(
+    val departure: Airport,
+    val destination: Airport,
+    val isFavorite: Boolean
+)

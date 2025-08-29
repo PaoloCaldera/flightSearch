@@ -14,4 +14,7 @@
 
     <!-- AirportItem -->
     <dimen name="airport_name_line_height">16sp</dimen>
+
+    <!-- SearchFragment -->
+    <dimen name="search_result_h_padding">52dp</dimen>
 </resources>
