@@ -8,37 +8,40 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.flightsearch.data.Airport
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.ui.theme.FlightSearchTheme
+import com.example.flightsearch.ui.viewmodel.MainScreenViewModel
 
 @Composable
-fun MainScreen(modifier: Modifier) {
-    var isSearching by remember { mutableStateOf(false) }
+fun MainScreen(
+    viewModel: MainScreenViewModel = viewModel(),
+    modifier: Modifier
+) {
+    val mainScreenUiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             SearchBar(
-                isSearching = isSearching,
-                onFocus = { isFocused ->
-                    if (isFocused) isSearching = true
-                },
+                uiState = mainScreenUiState,
+                onTextChange = { viewModel.editSearchText(it) },
+                onClearIconClick = { viewModel.editSearchText("") },
+                onBackIconClick = { viewModel.unsetSearchingMode() },
+                onMicIconClick = { },
+                onFocus = { viewModel.setSearchingMode(it) },
                 modifier = Modifier.fillMaxWidth()
             )
         },
         modifier = modifier
     ) { innerPadding ->
-        FlightsFragment(
-            flightsList = emptyList(),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(innerPadding)
-        )
+        if (mainScreenUiState.isSearching) {
+            SearchFragment(modifier = modifier.padding(innerPadding))
+        } else {
+            FlightsFragment(modifier = modifier.padding(innerPadding))
+        }
     }
 }
 
@@ -54,9 +57,3 @@ fun MainScreenPreview() {
         )
     }
 }
-
-data class FlightUiState(
-    val departure: Airport,
-    val destination: Airport,
-    val isFavorite: Boolean
-)

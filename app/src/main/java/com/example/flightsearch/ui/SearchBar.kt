@@ -21,28 +21,46 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import com.example.flightsearch.R
 import com.example.flightsearch.ui.theme.FlightSearchTheme
+import com.example.flightsearch.ui.viewmodel.MainScreenUiState
 
 @Composable
 fun SearchBar(
-    isSearching: Boolean,
+    uiState: MainScreenUiState,
+    onTextChange: (String) -> Unit,
+    onClearIconClick: () -> Unit,
+    onBackIconClick: () -> Unit,
+    onMicIconClick: () -> Unit,
     onFocus: (Boolean) -> Unit,
     modifier: Modifier
 ) {
+    val isSearching = uiState.isSearching
+    val localFocusManager = LocalFocusManager.current
+
+    // Handle the focus of the search bar
+    LaunchedEffect(isSearching) {
+        if (!isSearching) {
+            localFocusManager.clearFocus()
+        }
+    }
+
     Box(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         OutlinedTextField(
-            value = "",
-            onValueChange = { },
+            value = uiState.searchText,
+            onValueChange = { onTextChange(it) },
             textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
             placeholder = {
@@ -53,38 +71,36 @@ fun SearchBar(
             },
             leadingIcon = {
                 if (isSearching) {
-                    IconButton(
-                        onClick = { }   // todo: handle icon click
-                    ) { }
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.back_icon_content_description),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    IconButton(onClick = onBackIconClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.back_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
                 }
             },
             trailingIcon = {
                 if (isSearching) {
-                    IconButton(
-                        onClick = { }   // todo: handle icon click
-                    ) { }
-                    Icon(
-                        imageVector = Icons.Filled.Clear,
-                        contentDescription = stringResource(R.string.clear_icon_content_description),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    IconButton(onClick = onClearIconClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Clear,
+                            contentDescription = stringResource(R.string.clear_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
                 } else {
-                    IconButton(
-                        onClick = { }   // todo: handle icon click
-                    ) { }
-                    Icon(
-                        imageVector = Icons.Filled.Mic,
-                        contentDescription = stringResource(R.string.microphone_icon_content_description),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer
-                    )
+                    IconButton(onClick = onMicIconClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = stringResource(R.string.microphone_icon_content_description),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                    }
                 }
             },
             keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Search
             ),
             colors = TextFieldDefaults.colors(
@@ -112,7 +128,11 @@ fun SearchBar(
 fun SearchBarPreview() {
     FlightSearchTheme {
         SearchBar(
-            isSearching = true,
+            uiState = MainScreenUiState(),
+            onTextChange = {},
+            onClearIconClick = {},
+            onBackIconClick = {},
+            onMicIconClick = {},
             onFocus = {},
             modifier = Modifier.fillMaxWidth()
         )

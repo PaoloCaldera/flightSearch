@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,25 +18,29 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.R
 import com.example.flightsearch.data.Airport
 import com.example.flightsearch.data.airports
-import com.example.flightsearch.data.favorites
 import com.example.flightsearch.ui.theme.FlightSearchTheme
 
 @Composable
 fun FlightsFragment(
-    flightsList: List<FlightUiState>,
+    flightsFragmentViewModel: FlightsFragmentViewModel = viewModel(),
     modifier: Modifier
 ) {
+    val uiState by flightsFragmentViewModel.uiState.collectAsState()
+
     LazyColumn(modifier = modifier) {
-        items(flightsList) { flight ->
+        items(uiState.flightsList) { flight ->
             FlightItem(
                 departure = flight.departure,
                 destination = flight.destination,
@@ -117,43 +120,6 @@ fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Mod
     }
 }
 
-
-@Preview
-@Composable
-fun FlightsFragmentPreview_Favorites() {
-    FlightSearchTheme {
-        FlightsFragment(
-            flightsList = favorites.map { favorite ->
-                FlightUiState(
-                    departure = airports.first { it.iataCode == favorite.departureCode },
-                    destination = airports.first { it.iataCode == favorite.destinationCode },
-                    isFavorite = true
-                )
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Preview
-@Composable
-fun FlightsFragmentPreview_Search() {
-    FlightSearchTheme {
-        val departure = airports.first { it.iataCode == "BGY" }
-        FlightsFragment(
-            flightsList = airports.filter { it.iataCode != "BGY" }.map { airport ->
-                FlightUiState(
-                    departure = departure,
-                    destination = airport,
-                    isFavorite = favorites.any {
-                        it.departureCode == departure.iataCode && it.destinationCode == airport.iataCode
-                    }
-                )
-            },
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-}
 
 @Preview
 @Composable
