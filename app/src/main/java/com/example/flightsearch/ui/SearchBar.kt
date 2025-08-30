@@ -1,0 +1,120 @@
+package com.example.flightsearch.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
+import com.example.flightsearch.R
+import com.example.flightsearch.ui.theme.FlightSearchTheme
+
+@Composable
+fun SearchBar(
+    isSearching: Boolean,
+    onFocus: (Boolean) -> Unit,
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+    ) {
+        OutlinedTextField(
+            value = "",
+            onValueChange = { },
+            textStyle = MaterialTheme.typography.bodyMedium,
+            singleLine = true,
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.search_departure_airport),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            },
+            leadingIcon = {
+                if (isSearching) {
+                    IconButton(
+                        onClick = { }   // todo: handle icon click
+                    ) { }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = stringResource(R.string.back_icon_content_description),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            },
+            trailingIcon = {
+                if (isSearching) {
+                    IconButton(
+                        onClick = { }   // todo: handle icon click
+                    ) { }
+                    Icon(
+                        imageVector = Icons.Filled.Clear,
+                        contentDescription = stringResource(R.string.clear_icon_content_description),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                } else {
+                    IconButton(
+                        onClick = { }   // todo: handle icon click
+                    ) { }
+                    Icon(
+                        imageVector = Icons.Filled.Mic,
+                        contentDescription = stringResource(R.string.microphone_icon_content_description),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+            },
+            keyboardOptions = KeyboardOptions.Default.copy(
+                imeAction = ImeAction.Search
+            ),
+            colors = TextFieldDefaults.colors(
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent
+            ),
+            modifier = modifier
+                .padding(
+                    start = WindowInsets.systemBars.asPaddingValues()
+                        .calculateStartPadding(LayoutDirection.Ltr),
+                    end = WindowInsets.systemBars.asPaddingValues()
+                        .calculateEndPadding(LayoutDirection.Ltr),
+                    top = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+                )
+                .onFocusChanged {
+                    onFocus(it.isFocused)
+                }
+        )
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun SearchBarPreview() {
+    FlightSearchTheme {
+        SearchBar(
+            isSearching = true,
+            onFocus = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}

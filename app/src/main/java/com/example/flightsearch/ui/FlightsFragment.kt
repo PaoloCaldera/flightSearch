@@ -33,11 +33,11 @@ import com.example.flightsearch.ui.theme.FlightSearchTheme
 
 @Composable
 fun FlightsFragment(
-    flightsFragmentUiState: FlightsFragmentUiState,
+    flightsList: List<FlightUiState>,
     modifier: Modifier
 ) {
     LazyColumn(modifier = modifier) {
-        items(flightsFragmentUiState.flightsUiState) { flight ->
+        items(flightsList) { flight ->
             FlightItem(
                 departure = flight.departure,
                 destination = flight.destination,
@@ -123,15 +123,13 @@ fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Mod
 fun FlightsFragmentPreview_Favorites() {
     FlightSearchTheme {
         FlightsFragment(
-            flightsFragmentUiState = FlightsFragmentUiState(
-                flightsUiState = favorites.map { favorite ->
-                    FlightUiState(
-                        departure = airports.first { it.iataCode == favorite.departureCode },
-                        destination = airports.first { it.iataCode == favorite.destinationCode },
-                        isFavorite = true
-                    )
-                }
-            ),
+            flightsList = favorites.map { favorite ->
+                FlightUiState(
+                    departure = airports.first { it.iataCode == favorite.departureCode },
+                    destination = airports.first { it.iataCode == favorite.destinationCode },
+                    isFavorite = true
+                )
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -143,17 +141,15 @@ fun FlightsFragmentPreview_Search() {
     FlightSearchTheme {
         val departure = airports.first { it.iataCode == "BGY" }
         FlightsFragment(
-            flightsFragmentUiState = FlightsFragmentUiState(
-                flightsUiState = airports.filter { it.iataCode != "BGY" }.map { airport ->
-                    FlightUiState(
-                        departure = departure,
-                        destination = airport,
-                        isFavorite = favorites.any {
-                            it.departureCode == departure.iataCode && it.destinationCode == airport.iataCode
-                        }
-                    )
-                }
-            ),
+            flightsList = airports.filter { it.iataCode != "BGY" }.map { airport ->
+                FlightUiState(
+                    departure = departure,
+                    destination = airport,
+                    isFavorite = favorites.any {
+                        it.departureCode == departure.iataCode && it.destinationCode == airport.iataCode
+                    }
+                )
+            },
             modifier = Modifier.fillMaxSize()
         )
     }
@@ -188,14 +184,3 @@ fun AirportItemPreview() {
         )
     }
 }
-
-
-data class FlightsFragmentUiState(
-    val flightsUiState: List<FlightUiState>
-)
-
-data class FlightUiState(
-    val departure: Airport,
-    val destination: Airport,
-    val isFavorite: Boolean
-)
