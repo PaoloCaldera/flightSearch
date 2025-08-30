@@ -7,6 +7,6 @@ import com.example.flightsearch.data.entity.Favorite
 
 data class FavoriteWithAirports(
     @Embedded val favorite: Favorite,
-    @Relation(parentColumn = "departureId", entityColumn = "id") val departure: Airport,
-    @Relation(parentColumn = "destinationId", entityColumn = "id") val destination: Airport
+    @Relation(parentColumn = "departure_id", entityColumn = "id") val departure: Airport,
+    @Relation(parentColumn = "destination_id", entityColumn = "id") val destination: Airport
 )
