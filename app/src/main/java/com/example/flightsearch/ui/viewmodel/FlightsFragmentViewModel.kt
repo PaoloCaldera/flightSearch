@@ -1,7 +1,7 @@
-package com.example.flightsearch.ui
+package com.example.flightsearch.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import com.example.flightsearch.data.Airport
+import com.example.flightsearch.data.support.AirportSupport
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +18,7 @@ data class FlightsFragmentUiState(
 )
 
 data class FlightUiState(
-    val departure: Airport,
-    val destination: Airport,
+    val departure: AirportSupport,
+    val destination: AirportSupport,
     val isFavorite: Boolean
 )

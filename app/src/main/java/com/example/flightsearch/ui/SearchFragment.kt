@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.R
 import com.example.flightsearch.ui.theme.FlightSearchTheme
+import com.example.flightsearch.ui.viewmodel.SearchFragmentViewModel
 
 @Composable
 fun SearchFragment(

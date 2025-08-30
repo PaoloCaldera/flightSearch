@@ -28,9 +28,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.R
-import com.example.flightsearch.data.Airport
-import com.example.flightsearch.data.airports
+import com.example.flightsearch.data.support.AirportSupport
+import com.example.flightsearch.data.support.airports
 import com.example.flightsearch.ui.theme.FlightSearchTheme
+import com.example.flightsearch.ui.viewmodel.FlightsFragmentViewModel
 
 @Composable
 fun FlightsFragment(
@@ -55,8 +56,8 @@ fun FlightsFragment(
 
 @Composable
 fun FlightItem(
-    departure: Airport,
-    destination: Airport,
+    departure: AirportSupport,
+    destination: AirportSupport,
     isFavorite: Boolean = false,
     modifier: Modifier
 ) {
@@ -98,7 +99,7 @@ fun FlightItem(
 }
 
 @Composable
-fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Modifier) {
+fun FlightAirportItem(airport: AirportSupport, action: String, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
