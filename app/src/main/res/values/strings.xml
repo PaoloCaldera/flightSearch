@@ -1,7 +1,14 @@
 <resources>
     <string name="app_name">FlightSearch</string>
 
+    <!-- SearchBar -->
     <string name="search_departure_airport">Search departure airport</string>
-    <string name="from">From</string>
-    <string name="to">To</string>
+    <string name="microphone_icon_content_description">Microphone</string>
+    <string name="clear_icon_content_description">Clear</string>
+    <string name="back_icon_content_description">Back</string>
+
+    <!-- FlightItem -->
+    <string name="favorite_icon_content_description">Favorite</string>
+    <string name="depart">DEPART</string>
+    <string name="arrive">ARRIVE</string>
 </resources>
