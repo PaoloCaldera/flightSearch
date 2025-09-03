@@ -18,26 +18,31 @@ import com.example.flightsearch.ui.viewmodel.MainScreenViewModel
 
 @Composable
 fun MainScreen(
-    viewModel: MainScreenViewModel = viewModel(),
+    viewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.Factory),
     modifier: Modifier
 ) {
-    val mainScreenUiState by viewModel.uiState.collectAsState()
+    val searchText by viewModel.searchTextUiState.collectAsState()
+    val isSearching by viewModel.isSearchingUiState.collectAsState()
 
     Scaffold(
         topBar = {
             SearchBar(
-                uiState = mainScreenUiState,
-                onTextChange = { viewModel.editSearchText(it) },
-                onClearIconClick = { viewModel.editSearchText("") },
-                onBackIconClick = { viewModel.unsetSearchingMode() },
+                searchText = searchText,
+                isSearching = isSearching,
+                onTextChange = { viewModel.setSearchText(it) },
+                onClearIconClick = { viewModel.setSearchText("") },
+                onBackIconClick = {
+                    viewModel.setSearchText("")
+                    viewModel.setIsSearching(false)
+                },
                 onMicIconClick = { },
-                onFocus = { viewModel.setSearchingMode(it) },
+                onFocus = { isFocused -> if (isFocused) viewModel.setIsSearching(true) },
                 modifier = Modifier.fillMaxWidth()
             )
         },
         modifier = modifier
     ) { innerPadding ->
-        if (mainScreenUiState.isSearching) {
+        if (isSearching) {
             SearchFragment(modifier = modifier.padding(innerPadding))
         } else {
             FlightsFragment(modifier = modifier.padding(innerPadding))
