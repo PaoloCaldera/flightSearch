@@ -22,7 +22,7 @@ class SearchFragmentViewModel(
 
     val uiState: StateFlow<List<Airport>> = preferencesRepository.searchText
         .map {
-            roomRepository.getFilteredDestinations(it)
+            roomRepository.getFilteredAirports(it)
         }
         .stateIn(
             scope = viewModelScope,

@@ -5,10 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy.Companion.REPLACE
 import androidx.room.Query
-import androidx.room.Transaction
 import com.example.flightsearch.data.entity.Airport
 import com.example.flightsearch.data.entity.Favorite
-import com.example.flightsearch.data.relation.FavoriteWithAirports
 
 @Dao
 interface FlightSearchDao {
@@ -19,16 +17,18 @@ interface FlightSearchDao {
     @Query("SELECT * FROM airport " +
             "WHERE LOWER(iata_code) LIKE '%' || LOWER(:input) || '%' " +
             "OR LOWER(name) LIKE '%' || LOWER(:input) || '%'")
-    suspend fun selectDestinationByInput(input: String): List<Airport>
+    suspend fun selectAirportByInput(input: String): List<Airport>
 
-    @Transaction
+    @Query("SELECT * FROM airport WHERE iata_code = :iataCode")
+    suspend fun selectAirportByCode(iataCode: String): Airport
+
     @Query("SELECT * FROM favorite")
-    suspend fun selectAllFavoriteWithAirports(): List<FavoriteWithAirports>
+    suspend fun selectAllFavorites(): List<Favorite>
 
-    @Query("SELECT * FROM favorite WHERE departure_id = :departureId AND destination_id = :destinationId")
-    suspend fun selectFavoriteByDepartureIdAndDestinationId(
-        departureId: Int,
-        destinationId: Int
+    @Query("SELECT * FROM favorite WHERE departure_code = :departureCode AND destination_code = :destinationCode")
+    suspend fun selectFavoriteByDepartureCodeAndDestinationCode(
+        departureCode: String,
+        destinationCode: String
     ): List<Favorite>
 
     @Insert(onConflict = REPLACE)

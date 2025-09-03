@@ -5,12 +5,13 @@ import com.example.flightsearch.data.entity.Favorite
 
 class FlightSearchDatabaseRepository(private val dao: FlightSearchDao) {
     suspend fun getAllAirports() = dao.selectAllAirports()
-    suspend fun getFilteredDestinations(input: String) = dao.selectDestinationByInput(input)
-    suspend fun getFavorites() = dao.selectAllFavoriteWithAirports()
-    suspend fun getFavoriteByDepartureAndDestination(departureId: Int, destinationId: Int) =
-        dao.selectFavoriteByDepartureIdAndDestinationId(
-            departureId = departureId,
-            destinationId = destinationId
+    suspend fun getFilteredAirports(input: String) = dao.selectAirportByInput(input)
+    suspend fun getAirportByCode(iataCode: String) = dao.selectAirportByCode(iataCode)
+    suspend fun getFavorites() = dao.selectAllFavorites()
+    suspend fun getFavoritesByCodes(departureCode: String, destinationCode: String) =
+        dao.selectFavoriteByDepartureCodeAndDestinationCode(
+            departureCode = departureCode,
+            destinationCode = destinationCode
         )
     suspend fun saveFavorite(favorite: Favorite) = dao.insertFavorite(favorite)
     suspend fun removeFavorite(favorite: Favorite) = dao.deleteFavorite(favorite)

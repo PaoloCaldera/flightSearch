@@ -25,8 +25,8 @@ class FlightsFragmentViewModel(
             if (searchText.isEmpty()) {
                 roomRepository.getFavorites().map {
                     FlightUiState(
-                        departure = it.departure,
-                        destination = it.destination,
+                        departure = roomRepository.getAirportByCode(it.departureCode),
+                        destination = roomRepository.getAirportByCode(it.destinationCode),
                         isFavorite = true
                     )
                 }
@@ -34,9 +34,9 @@ class FlightsFragmentViewModel(
                 val list = roomRepository.getAllAirports()
                 val departure = list.first { it.iataCode == searchText }
                 list.filter { it.iataCode != searchText }.map {
-                    val isFavorite = roomRepository.getFavoriteByDepartureAndDestination(
-                        departureId = departure.id,
-                        destinationId = it.id
+                    val isFavorite = roomRepository.getFavoritesByCodes(
+                        departureCode = departure.iataCode,
+                        destinationCode = it.iataCode
                     ).isNotEmpty()
                     FlightUiState(
                         departure = departure,
