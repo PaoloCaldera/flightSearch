@@ -10,10 +10,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.example.flightsearch.R
-import com.example.flightsearch.data.support.AirportSupport
+import com.example.flightsearch.data.entity.Airport
 
 @Composable
-fun AirportItem(airport: AirportSupport, modifier: Modifier = Modifier) {
+fun AirportItem(airport: Airport, modifier: Modifier = Modifier) {
     Column(modifier = modifier) {
         Text(
             text = airport.name,

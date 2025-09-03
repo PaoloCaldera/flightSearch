@@ -16,13 +16,11 @@ class FlightSearchApplication : Application() {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PREFERENCES_NAME)
     }
 
-    lateinit var flightSearchPreferencesRepository: FlightSearchPreferencesRepository
-    lateinit var flightSearchDatabaseRepository: FlightSearchDatabaseRepository
-
-    override fun onCreate() {
-        super.onCreate()
-        flightSearchPreferencesRepository = FlightSearchPreferencesRepository(dataStore)
-        flightSearchDatabaseRepository = FlightSearchDatabaseRepository(
+    val flightSearchPreferencesRepository: FlightSearchPreferencesRepository by lazy {
+        FlightSearchPreferencesRepository(dataStore)
+    }
+    val flightSearchDatabaseRepository: FlightSearchDatabaseRepository by lazy {
+        FlightSearchDatabaseRepository(
             FlightSearchDatabase.getDatabase(this).dao()
         )
     }

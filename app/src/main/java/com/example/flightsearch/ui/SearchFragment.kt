@@ -17,13 +17,13 @@ import com.example.flightsearch.ui.viewmodel.SearchFragmentViewModel
 
 @Composable
 fun SearchFragment(
-    searchFragmentViewModel: SearchFragmentViewModel = viewModel(),
+    searchFragmentViewModel: SearchFragmentViewModel = viewModel(factory = SearchFragmentViewModel.Factory),
     modifier: Modifier
 ) {
     val uiState by searchFragmentViewModel.uiState.collectAsState()
 
     LazyColumn(modifier = modifier) {
-        items(uiState.searchList) { airport ->
+        items(uiState) { airport ->
             AirportItem(
                 airport = airport,
                 modifier = Modifier
