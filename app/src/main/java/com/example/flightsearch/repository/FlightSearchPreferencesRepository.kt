@@ -14,10 +14,10 @@ class FlightSearchPreferencesRepository(
     private val flightSearchDataStore: DataStore<Preferences>
 ) {
     companion object {
-        val SEARCH_TEXT = stringPreferencesKey("search_text")
+        val USER_SELECTION = stringPreferencesKey("user_selection")
     }
 
-    val searchText: Flow<String> = flightSearchDataStore.data
+    val userSelection: Flow<String> = flightSearchDataStore.data
         .catch {
             if(it is IOException) {
                 emit(emptyPreferences())
@@ -26,12 +26,12 @@ class FlightSearchPreferencesRepository(
             }
         }
         .map {
-            it[SEARCH_TEXT] ?: ""
+            it[USER_SELECTION] ?: ""
         }
 
-    suspend fun saveSearchTextPreference(searchText: String) {
+    suspend fun saveUserSelectionPreference(searchText: String) {
         flightSearchDataStore.edit {
-            it[SEARCH_TEXT] = searchText
+            it[USER_SELECTION] = searchText
         }
     }
 }

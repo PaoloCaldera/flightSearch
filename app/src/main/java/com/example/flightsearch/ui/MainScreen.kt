@@ -21,16 +21,20 @@ fun MainScreen(
     viewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.Factory),
     modifier: Modifier
 ) {
+    val userSelection by viewModel.userSelection.collectAsState()
     val searchText by viewModel.searchTextUiState.collectAsState()
     val isSearching by viewModel.isSearchingUiState.collectAsState()
+    val searchList by viewModel.searchList.collectAsState()
+    val flightsList by viewModel.flightsList.collectAsState()
 
     Scaffold(
         topBar = {
             SearchBar(
                 searchText = searchText,
+                userSelection = userSelection,
                 isSearching = isSearching,
                 onTextChange = { viewModel.setSearchText(it) },
-                onClearIconClick = { viewModel.setSearchText("") },
+                onClearIconClick = { viewModel.clearUserSelection() },
                 onBackIconClick = {
                     viewModel.setSearchText("")
                     viewModel.setIsSearching(false)
@@ -43,9 +47,16 @@ fun MainScreen(
         modifier = modifier
     ) { innerPadding ->
         if (isSearching) {
-            SearchFragment(modifier = modifier.padding(innerPadding))
+            SearchFragment(
+                searchList = searchList,
+                onSelection = { viewModel.onUserSelection(it) },
+                modifier = modifier.padding(innerPadding)
+            )
         } else {
-            FlightsFragment(modifier = modifier.padding(innerPadding))
+            FlightsFragment(
+                flightsList = flightsList,
+                modifier = modifier.padding(innerPadding)
+            )
         }
     }
 }

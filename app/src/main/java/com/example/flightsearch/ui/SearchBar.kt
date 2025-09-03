@@ -37,6 +37,7 @@ import com.example.flightsearch.ui.theme.FlightSearchTheme
 @Composable
 fun SearchBar(
     searchText: String,
+    userSelection: String,
     isSearching: Boolean,
     onTextChange: (String) -> Unit,
     onClearIconClick: () -> Unit,
@@ -59,7 +60,7 @@ fun SearchBar(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         OutlinedTextField(
-            value = searchText,
+            value = if (isSearching) searchText else userSelection,
             onValueChange = { onTextChange(it) },
             textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
@@ -129,6 +130,7 @@ fun SearchBarPreview() {
     FlightSearchTheme {
         SearchBar(
             searchText = "",
+            userSelection = "",
             isSearching = false,
             onTextChange = {},
             onClearIconClick = {},
