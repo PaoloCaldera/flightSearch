@@ -9,13 +9,12 @@ import androidx.room.Transaction
 import com.example.flightsearch.data.entity.Airport
 import com.example.flightsearch.data.entity.Favorite
 import com.example.flightsearch.data.relation.FavoriteWithAirports
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FlightSearchDao {
 
-    @Query("SELECT * FROM airport WHERE iata_code != :iataCode")
-    suspend fun selectAllDestinations(iataCode: String): List<Airport>
+    @Query("SELECT * FROM airport")
+    suspend fun selectAllAirports(): List<Airport>
 
     @Query("SELECT * FROM airport " +
             "WHERE LOWER(iata_code) LIKE '%' || LOWER(:input) || '%' " +
@@ -24,7 +23,13 @@ interface FlightSearchDao {
 
     @Transaction
     @Query("SELECT * FROM favorite")
-    fun selectAllFavoriteWithAirports(): Flow<List<FavoriteWithAirports>>
+    suspend fun selectAllFavoriteWithAirports(): List<FavoriteWithAirports>
+
+    @Query("SELECT * FROM favorite WHERE departure_id = :departureId AND destination_id = :destinationId")
+    suspend fun selectFavoriteByDepartureIdAndDestinationId(
+        departureId: Int,
+        destinationId: Int
+    ): List<Favorite>
 
     @Insert(onConflict = REPLACE)
     suspend fun insertFavorite(favorite: Favorite)

@@ -28,20 +28,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.R
-import com.example.flightsearch.data.support.AirportSupport
-import com.example.flightsearch.data.support.airports
+import com.example.flightsearch.data.entity.Airport
 import com.example.flightsearch.ui.theme.FlightSearchTheme
 import com.example.flightsearch.ui.viewmodel.FlightsFragmentViewModel
 
 @Composable
 fun FlightsFragment(
-    flightsFragmentViewModel: FlightsFragmentViewModel = viewModel(),
+    flightsFragmentViewModel: FlightsFragmentViewModel = viewModel(factory = FlightsFragmentViewModel.Factory),
     modifier: Modifier
 ) {
     val uiState by flightsFragmentViewModel.uiState.collectAsState()
 
     LazyColumn(modifier = modifier) {
-        items(uiState.flightsList) { flight ->
+        items(uiState) { flight ->
             FlightItem(
                 departure = flight.departure,
                 destination = flight.destination,
@@ -56,8 +55,8 @@ fun FlightsFragment(
 
 @Composable
 fun FlightItem(
-    departure: AirportSupport,
-    destination: AirportSupport,
+    departure: Airport,
+    destination: Airport,
     isFavorite: Boolean = false,
     modifier: Modifier
 ) {
@@ -99,7 +98,7 @@ fun FlightItem(
 }
 
 @Composable
-fun FlightAirportItem(airport: AirportSupport, action: String, modifier: Modifier = Modifier) {
+fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Modifier) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
@@ -127,8 +126,18 @@ fun FlightAirportItem(airport: AirportSupport, action: String, modifier: Modifie
 fun FlightItemPreview() {
     FlightSearchTheme {
         FlightItem(
-            departure = airports[0],
-            destination = airports[1],
+            departure = Airport(
+                id = 1,
+                name = "Francisco Sá Carneiro Airport",
+                iataCode = "OPO",
+                passengers = 5053134
+            ),
+            destination = Airport(
+                id = 2,
+                name = "Stockholm Arlanda Airport",
+                iataCode = "ARN",
+                passengers = 7494765
+            ),
             isFavorite = true,
             modifier = Modifier
                 .fillMaxWidth()
@@ -142,7 +151,12 @@ fun FlightItemPreview() {
 fun AirportItemPreview() {
     FlightSearchTheme {
         AirportItem(
-            airport = airports[0],
+            airport = Airport(
+                id = 1,
+                name = "Francisco Sá Carneiro Airport",
+                iataCode = "OPO",
+                passengers = 5053134
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
