@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -47,7 +48,7 @@ fun FlightsFragment(
     var destinationCode by rememberSaveable { mutableStateOf("") }
     var isFavorite by rememberSaveable { mutableStateOf(false) }
 
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.padding(dimensionResource(R.dimen.small_padding))) {
         items(flightsList) { flight ->
             FlightItem(
                 flight = flight,
@@ -95,6 +96,9 @@ fun FlightItem(
             enabled = true,
             onClick = { onFlightLongClicked() },
             onLongClick = { onFlightLongClicked() }
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer
         )
     ) {
         Row(
@@ -125,7 +129,8 @@ fun FlightItem(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Favorite,
-                        contentDescription = stringResource(R.string.favorite_icon_content_description)
+                        contentDescription = stringResource(R.string.favorite_icon_content_description),
+                        tint = MaterialTheme.colorScheme.tertiary
                     )
                 }
             }
@@ -149,10 +154,11 @@ fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Mod
             Text(
                 text = action,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        AirportItem(airport = airport)
+        AirportItem(airport = airport, color = MaterialTheme.colorScheme.onSecondaryContainer)
     }
 }
 
@@ -196,6 +202,7 @@ fun AirportItemPreview() {
                 iataCode = "OPO",
                 passengers = 5053134
             ),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,19 +21,21 @@ import com.example.flightsearch.data.entity.Airport
 import com.example.flightsearch.data.entity.Favorite
 
 @Composable
-fun AirportItem(airport: Airport, modifier: Modifier = Modifier) {
+fun AirportItem(airport: Airport, modifier: Modifier = Modifier, color: Color) {
     Column(modifier = modifier) {
         Text(
             text = airport.name,
             textAlign = TextAlign.Left,
             lineHeight = dimensionResource(R.dimen.airport_name_line_height).value.sp,
-            style = MaterialTheme.typography.bodySmall
+            style = MaterialTheme.typography.bodySmall,
+            color = color
         )
         Text(
             text = airport.iataCode,
             textAlign = TextAlign.Left,
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleSmall
+            style = MaterialTheme.typography.titleSmall,
+            color = color
         )
     }
 }
@@ -57,17 +60,29 @@ fun FavoriteAlertDialog(
         confirmButton = {
             if (isAddAction) {
                 TextButton(onClick = { onAddFavorite(favoriteSelected) }) {
-                    Text(text = stringResource(R.string.alert_dialog_confirm_add))
+                    Text(
+                        text = stringResource(R.string.alert_dialog_confirm_add),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             } else {
                 TextButton(onClick = { onRemoveFavorite(favoriteSelected) }) {
-                    Text(text = stringResource(R.string.alert_dialog_confirm_remove))
+                    Text(
+                        text = stringResource(R.string.alert_dialog_confirm_remove),
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = stringResource(R.string.alert_dialog_dismiss))
+                Text(
+                    text = stringResource(R.string.alert_dialog_dismiss),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
             }
         },
         icon = {
@@ -75,6 +90,10 @@ fun FavoriteAlertDialog(
                 imageVector = Icons.Default.Favorite,
                 contentDescription = stringResource(R.string.favorite_icon_content_description)
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        textContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        iconContentColor = MaterialTheme.colorScheme.tertiary
     )
 }

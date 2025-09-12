@@ -54,7 +54,7 @@ fun MainScreen(
             )
         } else {
             FlightsFragment(
-                flightsList = if (searchText.isEmpty()) favoritesList else flightsList,
+                flightsList = if (userSelection.isEmpty()) favoritesList else flightsList,
                 onAddFavorite = { viewModel.addFavorite(it) },
                 onRemoveFavorite = { viewModel.removeFavorite(it) },
                 modifier = modifier.padding(innerPadding)

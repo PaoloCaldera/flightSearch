@@ -57,7 +57,7 @@ fun SearchBar(
     }
 
     Box(
-        modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
+        modifier = modifier.background(MaterialTheme.colorScheme.primary)
     ) {
         OutlinedTextField(
             value = if (isSearching) searchText else userSelection,
@@ -76,7 +76,7 @@ fun SearchBar(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back_icon_content_description),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -87,7 +87,7 @@ fun SearchBar(
                         Icon(
                             imageVector = Icons.Filled.Clear,
                             contentDescription = stringResource(R.string.clear_icon_content_description),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 } else {
@@ -95,7 +95,7 @@ fun SearchBar(
                         Icon(
                             imageVector = Icons.Filled.Mic,
                             contentDescription = stringResource(R.string.microphone_icon_content_description),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -106,7 +106,13 @@ fun SearchBar(
             ),
             colors = TextFieldDefaults.colors(
                 unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = MaterialTheme.colorScheme.primary,
+                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.outlineVariant,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.outlineVariant
             ),
             modifier = modifier
                 .padding(
