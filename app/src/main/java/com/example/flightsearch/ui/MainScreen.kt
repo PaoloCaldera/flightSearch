@@ -26,6 +26,7 @@ fun MainScreen(
     val isSearching by viewModel.isSearchingUiState.collectAsState()
     val searchList by viewModel.searchList.collectAsState()
     val flightsList by viewModel.flightsList.collectAsState()
+    val favoritesList by viewModel.favoritesList.collectAsState()
 
     Scaffold(
         topBar = {
@@ -36,7 +37,6 @@ fun MainScreen(
                 onTextChange = { viewModel.setSearchText(it) },
                 onClearIconClick = { viewModel.clearUserSelection() },
                 onBackIconClick = {
-                    viewModel.setSearchText("")
                     viewModel.setIsSearching(false)
                 },
                 onMicIconClick = { },
@@ -54,7 +54,9 @@ fun MainScreen(
             )
         } else {
             FlightsFragment(
-                flightsList = flightsList,
+                flightsList = if (searchText.isEmpty()) favoritesList else flightsList,
+                onAddFavorite = { viewModel.addFavorite(it) },
+                onRemoveFavorite = { viewModel.removeFavorite(it) },
                 modifier = modifier.padding(innerPadding)
             )
         }

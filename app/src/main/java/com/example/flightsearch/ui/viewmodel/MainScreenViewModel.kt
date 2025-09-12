@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.flightsearch.FlightSearchApplication
 import com.example.flightsearch.data.entity.Airport
+import com.example.flightsearch.data.entity.Favorite
 import com.example.flightsearch.repository.FlightSearchDatabaseRepository
 import com.example.flightsearch.repository.FlightSearchPreferencesRepository
 import com.example.flightsearch.ui.model.FlightUiState
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -45,33 +47,41 @@ class MainScreenViewModel(
         initialValue = emptyList()
     )
 
-    val flightsList: StateFlow<List<FlightUiState>> = preferencesRepository.userSelection
-        .map { searchText ->
-            if (searchText.isEmpty()) {
-                roomRepository.getFavorites().map {
-                    FlightUiState(
-                        departure = roomRepository.getAirportByCode(it.departureCode),
-                        destination = roomRepository.getAirportByCode(it.destinationCode),
-                        isFavorite = true
-                    )
-                }
-            } else {
+    val flightsList: StateFlow<List<FlightUiState>> =
+        combine(
+            preferencesRepository.userSelection,
+            roomRepository.getFavorites()
+        ) { selection, favorites ->
+            if (selection.isNotEmpty()) {
                 val list = roomRepository.getAllAirports()
-                val departure = list.first { it.iataCode == searchText }
-                list.filter { it.iataCode != searchText }.map {
-                    val isFavorite = roomRepository.getFavoritesByCodes(
-                        departureCode = departure.iataCode,
-                        destinationCode = it.iataCode
-                    ).isNotEmpty()
+                val departure = list.first { it.iataCode == selection }
+                list.filter { it.iataCode != selection }.map {
+                    val isFavorite = favorites.any { favorite ->
+                        favorite.departureCode == departure.iataCode && favorite.destinationCode == it.iataCode
+                    }
                     FlightUiState(
                         departure = departure,
                         destination = it,
                         isFavorite = isFavorite
                     )
                 }
+            } else emptyList()
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
+
+    val favoritesList: StateFlow<List<FlightUiState>> =
+        roomRepository.getFavorites().map { favorites ->
+            favorites.map {
+                FlightUiState(
+                    departure = roomRepository.getAirportByCode(it.departureCode),
+                    destination = roomRepository.getAirportByCode(it.destinationCode),
+                    isFavorite = true
+                )
             }
-        }
-        .stateIn(
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = emptyList()
@@ -98,6 +108,23 @@ class MainScreenViewModel(
             preferencesRepository.saveUserSelectionPreference("")
         }
         setSearchText("")
+    }
+
+    fun addFavorite(favorite: Favorite) {
+        viewModelScope.launch {
+            roomRepository.saveFavorite(favorite)
+        }
+    }
+
+    fun removeFavorite(favorite: Favorite) {
+        viewModelScope.launch {
+            roomRepository.removeFavorite(
+                roomRepository.getFavoritesByCodes(
+                    departureCode = favorite.departureCode,
+                    destinationCode = favorite.destinationCode
+                ).first()
+            )
+        }
     }
 
     companion object {
