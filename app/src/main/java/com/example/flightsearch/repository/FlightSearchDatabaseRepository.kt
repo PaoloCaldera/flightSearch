@@ -7,9 +7,9 @@ class FlightSearchDatabaseRepository(private val dao: FlightSearchDao) {
     suspend fun getAllAirports() = dao.selectAllAirports()
     suspend fun getFilteredAirports(input: String) = dao.selectAirportByInput(input)
     suspend fun getAirportByCode(iataCode: String) = dao.selectAirportByCode(iataCode)
-    suspend fun getFavorites() = dao.selectAllFavorites()
+    fun getFavorites() = dao.selectAllFavorites()
     suspend fun getFavoritesByCodes(departureCode: String, destinationCode: String) =
-        dao.selectFavoriteByDepartureCodeAndDestinationCode(
+        dao.selectFavoritesByDepartureCodeAndDestinationCode(
             departureCode = departureCode,
             destinationCode = destinationCode
         )
