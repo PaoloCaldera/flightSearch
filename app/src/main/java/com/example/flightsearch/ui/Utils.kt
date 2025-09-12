@@ -11,6 +11,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -46,33 +47,33 @@ fun FavoriteAlertDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(text = "Favorites") },
+        title = { Text(text = stringResource(R.string.alert_dialog_title)) },
         text = {
             if (isAddAction)
-                Text(text = "Add this flight into your favorites list")
+                Text(text = stringResource(R.string.alert_dialog_description_add))
             else
-                Text(text = "Remove this flight from your favorites list")
+                Text(text = stringResource(R.string.alert_dialog_description_remove))
         },
         confirmButton = {
             if (isAddAction) {
                 TextButton(onClick = { onAddFavorite(favoriteSelected) }) {
-                    Text(text = "Add")
+                    Text(text = stringResource(R.string.alert_dialog_confirm_add))
                 }
             } else {
                 TextButton(onClick = { onRemoveFavorite(favoriteSelected) }) {
-                    Text(text = "Remove")
+                    Text(text = stringResource(R.string.alert_dialog_confirm_remove))
                 }
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(text = "Cancel")
+                Text(text = stringResource(R.string.alert_dialog_dismiss))
             }
         },
         icon = {
             Icon(
                 imageVector = Icons.Default.Favorite,
-                contentDescription = ""
+                contentDescription = stringResource(R.string.favorite_icon_content_description)
             )
         }
     )
