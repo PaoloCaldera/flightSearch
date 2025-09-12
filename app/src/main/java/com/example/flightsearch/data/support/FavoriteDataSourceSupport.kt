@@ -1,43 +1,43 @@
-package com.example.flightsearch.data
+package com.example.flightsearch.data.support
 
-data class Favorite(
+data class FavoriteSupport(
     val id: Int,
     val departureCode: String,
     val destinationCode: String
 )
 
 val favorites = listOf(
-    Favorite(
+    FavoriteSupport(
         id = 1,
         departureCode = "BGY",
         destinationCode = "FCO"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 2,
         departureCode = "FCO",
         destinationCode = "BGY"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 3,
         departureCode = "BGY",
         destinationCode = "ARN"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 4,
         departureCode = "BGY",
         destinationCode = "MAD"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 5,
         departureCode = "MAD",
         destinationCode = "BGY"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 6,
         departureCode = "ARN",
         destinationCode = "BGY"
     ),
-    Favorite(
+    FavoriteSupport(
         id = 7,
         departureCode = "AMS",
         destinationCode = "MUC"

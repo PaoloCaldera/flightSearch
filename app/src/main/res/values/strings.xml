@@ -11,4 +11,12 @@
     <string name="favorite_icon_content_description">Favorite</string>
     <string name="depart">DEPART</string>
     <string name="arrive">ARRIVE</string>
+
+    <!-- FavoriteAlertDialog -->
+    <string name="alert_dialog_title">Favorites</string>
+    <string name="alert_dialog_description_add">Add this flight into your favorites list</string>
+    <string name="alert_dialog_description_remove">Remove this flight from your favorites list</string>
+    <string name="alert_dialog_confirm_add">Add</string>
+    <string name="alert_dialog_confirm_remove">Remove</string>
+    <string name="alert_dialog_dismiss">Cancel</string>
 </resources>

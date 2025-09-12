@@ -1,5 +1,6 @@
 package com.example.flightsearch.ui
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,49 +19,84 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flightsearch.R
-import com.example.flightsearch.data.Airport
-import com.example.flightsearch.data.airports
+import com.example.flightsearch.data.entity.Airport
+import com.example.flightsearch.data.entity.Favorite
+import com.example.flightsearch.ui.model.FlightUiState
 import com.example.flightsearch.ui.theme.FlightSearchTheme
 
 @Composable
 fun FlightsFragment(
-    flightsFragmentViewModel: FlightsFragmentViewModel = viewModel(),
+    flightsList: List<FlightUiState>,
+    onAddFavorite: (Favorite) -> Unit,
+    onRemoveFavorite: (Favorite) -> Unit,
     modifier: Modifier
 ) {
-    val uiState by flightsFragmentViewModel.uiState.collectAsState()
+    var showDialog by rememberSaveable { mutableStateOf(false) }
+    var departureCode by rememberSaveable { mutableStateOf("") }
+    var destinationCode by rememberSaveable { mutableStateOf("") }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
 
     LazyColumn(modifier = modifier) {
-        items(uiState.flightsList) { flight ->
+        items(flightsList) { flight ->
             FlightItem(
-                departure = flight.departure,
-                destination = flight.destination,
-                isFavorite = flight.isFavorite,
+                flight = flight,
+                onFlightLongClicked = {
+                    departureCode = flight.departure.iataCode
+                    destinationCode = flight.destination.iataCode
+                    isFavorite = flight.isFavorite
+                    showDialog = true
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(R.dimen.extra_small_padding))
             )
         }
     }
+
+    if (showDialog) {
+        FavoriteAlertDialog(
+            isAddAction = !isFavorite,
+            favoriteSelected = Favorite(
+                departureCode = departureCode,
+                destinationCode = destinationCode
+            ),
+            onDismiss = { showDialog = false },
+            onAddFavorite = {
+                showDialog = false
+                onAddFavorite(it)
+            },
+            onRemoveFavorite = {
+                showDialog = false
+                onRemoveFavorite(it)
+            }
+        )
+    }
 }
 
 @Composable
 fun FlightItem(
-    departure: Airport,
-    destination: Airport,
-    isFavorite: Boolean = false,
+    flight: FlightUiState,
+    onFlightLongClicked: () -> Unit,
     modifier: Modifier
 ) {
-    Card(modifier = modifier) {
+    Card(
+        modifier = modifier.combinedClickable(
+            enabled = true,
+            onClick = { onFlightLongClicked() },
+            onLongClick = { onFlightLongClicked() }
+        )
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -74,13 +110,13 @@ fun FlightItem(
                 modifier = Modifier.weight(1f)
             ) {
                 FlightAirportItem(
-                    airport = departure,
+                    airport = flight.departure,
                     action = stringResource(R.string.depart)
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.flight_search_item_spacer_height)))
-                FlightAirportItem(airport = destination, action = stringResource(R.string.arrive))
+                FlightAirportItem(airport = flight.destination, action = stringResource(R.string.arrive))
             }
-            if (isFavorite) {
+            if (flight.isFavorite) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
@@ -126,9 +162,22 @@ fun FlightAirportItem(airport: Airport, action: String, modifier: Modifier = Mod
 fun FlightItemPreview() {
     FlightSearchTheme {
         FlightItem(
-            departure = airports[0],
-            destination = airports[1],
-            isFavorite = true,
+            FlightUiState(
+                departure = Airport(
+                    id = 1,
+                    name = "Francisco Sá Carneiro Airport",
+                    iataCode = "OPO",
+                    passengers = 5053134
+                ),
+                destination = Airport(
+                    id = 2,
+                    name = "Stockholm Arlanda Airport",
+                    iataCode = "ARN",
+                    passengers = 7494765
+                ),
+                isFavorite = true
+            ),
+            onFlightLongClicked = {},
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(R.dimen.extra_small_padding))
@@ -141,7 +190,12 @@ fun FlightItemPreview() {
 fun AirportItemPreview() {
     FlightSearchTheme {
         AirportItem(
-            airport = airports[0],
+            airport = Airport(
+                id = 1,
+                name = "Francisco Sá Carneiro Airport",
+                iataCode = "OPO",
+                passengers = 5053134
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

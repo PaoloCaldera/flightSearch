@@ -33,11 +33,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import com.example.flightsearch.R
 import com.example.flightsearch.ui.theme.FlightSearchTheme
-import com.example.flightsearch.ui.viewmodel.MainScreenUiState
 
 @Composable
 fun SearchBar(
-    uiState: MainScreenUiState,
+    searchText: String,
+    userSelection: String,
+    isSearching: Boolean,
     onTextChange: (String) -> Unit,
     onClearIconClick: () -> Unit,
     onBackIconClick: () -> Unit,
@@ -45,7 +46,7 @@ fun SearchBar(
     onFocus: (Boolean) -> Unit,
     modifier: Modifier
 ) {
-    val isSearching = uiState.isSearching
+    val isSearching = isSearching
     val localFocusManager = LocalFocusManager.current
 
     // Handle the focus of the search bar
@@ -59,7 +60,7 @@ fun SearchBar(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
         OutlinedTextField(
-            value = uiState.searchText,
+            value = if (isSearching) searchText else userSelection,
             onValueChange = { onTextChange(it) },
             textStyle = MaterialTheme.typography.bodyMedium,
             singleLine = true,
@@ -128,7 +129,9 @@ fun SearchBar(
 fun SearchBarPreview() {
     FlightSearchTheme {
         SearchBar(
-            uiState = MainScreenUiState(),
+            searchText = "",
+            userSelection = "",
+            isSearching = false,
             onTextChange = {},
             onClearIconClick = {},
             onBackIconClick = {},

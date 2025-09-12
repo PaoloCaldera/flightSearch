@@ -18,29 +18,47 @@ import com.example.flightsearch.ui.viewmodel.MainScreenViewModel
 
 @Composable
 fun MainScreen(
-    viewModel: MainScreenViewModel = viewModel(),
+    viewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.Factory),
     modifier: Modifier
 ) {
-    val mainScreenUiState by viewModel.uiState.collectAsState()
+    val userSelection by viewModel.userSelection.collectAsState()
+    val searchText by viewModel.searchTextUiState.collectAsState()
+    val isSearching by viewModel.isSearchingUiState.collectAsState()
+    val searchList by viewModel.searchList.collectAsState()
+    val flightsList by viewModel.flightsList.collectAsState()
+    val favoritesList by viewModel.favoritesList.collectAsState()
 
     Scaffold(
         topBar = {
             SearchBar(
-                uiState = mainScreenUiState,
-                onTextChange = { viewModel.editSearchText(it) },
-                onClearIconClick = { viewModel.editSearchText("") },
-                onBackIconClick = { viewModel.unsetSearchingMode() },
+                searchText = searchText,
+                userSelection = userSelection,
+                isSearching = isSearching,
+                onTextChange = { viewModel.setSearchText(it) },
+                onClearIconClick = { viewModel.clearUserSelection() },
+                onBackIconClick = {
+                    viewModel.setIsSearching(false)
+                },
                 onMicIconClick = { },
-                onFocus = { viewModel.setSearchingMode(it) },
+                onFocus = { isFocused -> if (isFocused) viewModel.setIsSearching(true) },
                 modifier = Modifier.fillMaxWidth()
             )
         },
         modifier = modifier
     ) { innerPadding ->
-        if (mainScreenUiState.isSearching) {
-            SearchFragment(modifier = modifier.padding(innerPadding))
+        if (isSearching) {
+            SearchFragment(
+                searchList = searchList,
+                onSelection = { viewModel.onUserSelection(it) },
+                modifier = modifier.padding(innerPadding)
+            )
         } else {
-            FlightsFragment(modifier = modifier.padding(innerPadding))
+            FlightsFragment(
+                flightsList = if (searchText.isEmpty()) favoritesList else flightsList,
+                onAddFavorite = { viewModel.addFavorite(it) },
+                onRemoveFavorite = { viewModel.removeFavorite(it) },
+                modifier = modifier.padding(innerPadding)
+            )
         }
     }
 }
