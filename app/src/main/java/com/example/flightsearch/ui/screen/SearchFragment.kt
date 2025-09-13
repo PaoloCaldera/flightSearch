@@ -1,4 +1,4 @@
-package com.example.flightsearch.ui
+package com.example.flightsearch.ui.screen
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,7 +33,10 @@ fun SearchFragment(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimensionResource(R.dimen.extra_small_padding), horizontal = dimensionResource(R.dimen.medium_padding))
+                        .padding(
+                            vertical = dimensionResource(R.dimen.extra_small_padding),
+                            horizontal = dimensionResource(R.dimen.medium_padding)
+                        )
                         .combinedClickable(
                             enabled = true,
                             onClick = { onSelection(airport.iataCode) }
