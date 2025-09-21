@@ -9,12 +9,12 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.flightsearch.ui.Permission
 import com.example.flightsearch.ui.theme.FlightSearchTheme
 import com.example.flightsearch.ui.viewmodel.MainScreenViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -34,15 +34,16 @@ fun MainScreen(
     val searchList by mainScreenViewModel.searchList.collectAsState()
     val flightsList by mainScreenViewModel.flightsList.collectAsState()
     val favoritesList by mainScreenViewModel.favoritesList.collectAsState()
+    val micUiState by mainScreenViewModel.micUiState.collectAsState()
 
     // Permissions
     val recordAudioPermissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
-    Permission(
-        permissionState = recordAudioPermissionState,
-        onPermissionGranted = {
-            // todo
-        }
-    )
+    LaunchedEffect(recordAudioPermissionState.status.isGranted) {
+        if (recordAudioPermissionState.status.isGranted)
+            mainScreenViewModel.updateRecordAudioPermission()
+    }
+
+    RecordingAlertDialog(micUiState)
 
     Scaffold(
         topBar = {
@@ -55,7 +56,8 @@ fun MainScreen(
                 onBackIconClick = { mainScreenViewModel.setIsSearching(false) },
                 onMicIconClick = {
                     if (recordAudioPermissionState.status.isGranted) {
-                        // todo
+                        mainScreenViewModel.setIsSearching(true)
+                        mainScreenViewModel.startListening()
                     } else {
                         recordAudioPermissionState.launchPermissionRequest()
                     }

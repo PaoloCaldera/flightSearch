@@ -1,5 +1,10 @@
 package com.example.flightsearch.ui.viewmodel
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.os.IBinder
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,6 +17,9 @@ import com.example.flightsearch.data.entity.Favorite
 import com.example.flightsearch.repository.FlightSearchDatabaseRepository
 import com.example.flightsearch.repository.FlightSearchPreferencesRepository
 import com.example.flightsearch.ui.model.FlightUiState
+import com.example.flightsearch.microphone.model.MicState
+import com.example.flightsearch.microphone.VoiceRecognitionService
+import com.example.flightsearch.ui.model.MicUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -19,12 +27,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
     private val preferencesRepository: FlightSearchPreferencesRepository,
-    private val roomRepository: FlightSearchDatabaseRepository
+    private val roomRepository: FlightSearchDatabaseRepository,
+    private val applicationContext: Context
 ) : ViewModel() {
+
+    private val recordAudioPermission = MutableStateFlow(false).also {
+        viewModelScope.launch {
+            it.collect { isGranted ->
+                if (isGranted) {
+                    setIsSearching(true)
+                    startListening()
+                }
+            }
+        }
+    }
 
     val userSelection: StateFlow<String> = preferencesRepository.userSelection
         .stateIn(
@@ -32,6 +53,9 @@ class MainScreenViewModel(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = ""
         )
+
+    private val _micUiState = MutableStateFlow(MicUiState())
+    val micUiState: StateFlow<MicUiState> = _micUiState.asStateFlow()
 
     private val _searchTextUiState = MutableStateFlow("")
     val searchTextUiState: StateFlow<String> = _searchTextUiState.asStateFlow()
@@ -127,13 +151,87 @@ class MainScreenViewModel(
         }
     }
 
+
+    private var voiceServiceConnection: ServiceConnection? = null
+
+    fun startListening() {
+        val intent = Intent(applicationContext, VoiceRecognitionService::class.java)
+        voiceServiceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val voiceRecognitionService =
+                    (service as VoiceRecognitionService.VoiceRecognitionServiceBinder).service
+                viewModelScope.launch {
+                    voiceRecognitionService.voiceState.collect { voiceState ->
+                        when (voiceState.state) {
+                            MicState.OFF -> {
+                                _micUiState.update { it.reset() }
+                            }
+
+                            MicState.READY_FOR_SPEECH -> {
+                                _micUiState.update {
+                                    it.copy(dialogText = voiceState.result, showDialog = true)
+                                }
+                            }
+
+                            MicState.BEGINNING_OF_SPEECH -> {
+                                _micUiState.update { it.copy(dialogText = voiceState.result) }
+                            }
+
+                            MicState.SPEAKING -> {
+                                _micUiState.update { it.copy(dialogText = voiceState.result) }
+                            }
+
+                            MicState.END_OF_SPEECH -> {
+                                _micUiState.update { it.copy(showDialog = false) }
+                            }
+
+                            MicState.RESULT -> {
+                                _micUiState.update { it.copy(dialogText = voiceState.result) }
+                                _searchTextUiState.value = voiceState.result
+                                stopListening()
+                            }
+
+                            MicState.ERROR -> {
+                                _micUiState.update { it.reset() }
+                                // Log error
+                                stopListening()
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {}
+        }
+        applicationContext.apply {
+            startService(intent)
+            bindService(intent, voiceServiceConnection!!, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    fun stopListening() {
+        voiceServiceConnection?.let {
+            val intent = Intent(applicationContext, VoiceRecognitionService::class.java)
+            applicationContext.apply {
+                unbindService(voiceServiceConnection!!)
+                stopService(intent)
+            }
+        }
+    }
+
+    fun updateRecordAudioPermission() {
+        recordAudioPermission.update { true }
+    }
+
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as FlightSearchApplication)
                 MainScreenViewModel(
                     preferencesRepository = application.flightSearchPreferencesRepository,
-                    roomRepository = application.flightSearchDatabaseRepository
+                    roomRepository = application.flightSearchDatabaseRepository,
+                    applicationContext = application.applicationContext
                 )
             }
         }

@@ -3,6 +3,7 @@ package com.example.flightsearch.ui.screen
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.example.flightsearch.R
 import com.example.flightsearch.data.entity.Airport
 import com.example.flightsearch.data.entity.Favorite
+import com.example.flightsearch.ui.model.MicUiState
 
 @Composable
 fun AirportItem(airport: Airport, modifier: Modifier = Modifier, color: Color) {
@@ -96,4 +98,28 @@ fun FavoriteAlertDialog(
         textContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         iconContentColor = MaterialTheme.colorScheme.tertiary
     )
+}
+
+
+@Composable
+fun RecordingAlertDialog(micUiState: MicUiState) {
+    if (micUiState.showDialog) {
+        AlertDialog(
+            onDismissRequest = { },
+            text = {
+                Text(
+                    text = micUiState.dialogText,
+                    textAlign = TextAlign.Center
+                )
+            },
+            confirmButton = { },
+            dismissButton = { },
+            icon = {
+                Icon(
+                    imageVector = Icons.Default.Mic,
+                    contentDescription = stringResource(R.string.microphone_icon_content_description)
+                )
+            }
+        )
+    }
 }
