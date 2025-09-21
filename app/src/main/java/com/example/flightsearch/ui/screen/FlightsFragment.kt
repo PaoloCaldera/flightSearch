@@ -118,7 +118,10 @@ fun FlightItem(
                     action = stringResource(R.string.depart)
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(R.dimen.flight_search_item_spacer_height)))
-                FlightAirportItem(airport = flight.destination, action = stringResource(R.string.arrive))
+                FlightAirportItem(
+                    airport = flight.destination,
+                    action = stringResource(R.string.arrive)
+                )
             }
             if (flight.isFavorite) {
                 Box(

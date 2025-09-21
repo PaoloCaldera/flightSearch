@@ -17,7 +17,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FlightSearchTheme {
-                val mainScreenViewModel: MainScreenViewModel = viewModel(factory = MainScreenViewModel.Factory)
+                val mainScreenViewModel: MainScreenViewModel =
+                    viewModel(factory = MainScreenViewModel.Factory)
                 MainScreen(
                     mainScreenViewModel = mainScreenViewModel,
                     modifier = Modifier.fillMaxSize()

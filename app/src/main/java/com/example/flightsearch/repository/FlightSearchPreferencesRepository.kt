@@ -19,7 +19,7 @@ class FlightSearchPreferencesRepository(
 
     val userSelection: Flow<String> = flightSearchDataStore.data
         .catch {
-            if(it is IOException) {
+            if (it is IOException) {
                 emit(emptyPreferences())
             } else {
                 throw it

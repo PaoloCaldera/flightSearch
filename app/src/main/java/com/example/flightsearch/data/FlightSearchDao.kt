@@ -15,10 +15,12 @@ interface FlightSearchDao {
     @Query("SELECT * FROM airport ORDER BY passengers DESC")
     suspend fun selectAllAirports(): List<Airport>
 
-    @Query("SELECT * FROM airport " +
-            "WHERE LOWER(iata_code) LIKE '%' || LOWER(:input) || '%' " +
-            "OR LOWER(name) LIKE '%' || LOWER(:input) || '%'" +
-            "ORDER BY passengers DESC LIMIT 10")
+    @Query(
+        "SELECT * FROM airport " +
+                "WHERE LOWER(iata_code) LIKE '%' || LOWER(:input) || '%' " +
+                "OR LOWER(name) LIKE '%' || LOWER(:input) || '%'" +
+                "ORDER BY passengers DESC LIMIT 10"
+    )
     suspend fun selectAirportByInput(input: String): List<Airport>
 
     @Query("SELECT * FROM airport WHERE iata_code = :iataCode")

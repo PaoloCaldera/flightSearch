@@ -119,7 +119,11 @@ fun RecordingAlertDialog(micUiState: MicUiState) {
                     imageVector = Icons.Default.Mic,
                     contentDescription = stringResource(R.string.microphone_icon_content_description)
                 )
-            }
+            },
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            textContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            iconContentColor = MaterialTheme.colorScheme.tertiary
         )
     }
 }
