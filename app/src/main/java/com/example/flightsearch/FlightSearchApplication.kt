@@ -19,6 +19,7 @@ class FlightSearchApplication : Application() {
     val flightSearchPreferencesRepository: FlightSearchPreferencesRepository by lazy {
         FlightSearchPreferencesRepository(dataStore)
     }
+
     val flightSearchDatabaseRepository: FlightSearchDatabaseRepository by lazy {
         FlightSearchDatabaseRepository(
             FlightSearchDatabase.getDatabase(this).dao()
